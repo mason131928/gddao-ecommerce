@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 // 管理員帳號密碼（實際專案中應該存在資料庫或環境變數）
 const ADMIN_CREDENTIALS = {
-  username: "Guppy",
+  username: "guppy",
   password: "$$Guppy94105597@@",
 };
 

@@ -13,45 +13,89 @@ import { PaymentForm } from "@/components/payment/PaymentForm";
 import { Toaster } from "@/components/ui/sonner";
 import { useState } from "react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const products = [
-  {
-    id: "2-pack",
-    name: "二入組合禮盒",
-    description: "白米＋紅糙米（600g／包），抽屜式包裝",
-    price: 5000,
-    quantity: 10,
-    unitPrice: 500,
-    image: "/rice-2pack.jpg",
-  },
-  {
-    id: "3-pack",
-    name: "三入組合禮盒",
-    description: "白米＋糙米＋紅糙米（600g／包），抽屜式包裝",
-    price: 6000,
-    quantity: 8,
-    unitPrice: 750,
-    image: "/rice-3pack.jpg",
-  },
-  {
-    id: "company",
-    name: "企業契作永續版",
-    description: "客製企業 LOGO 禮盒包裝與故事頁面",
-    price: 300000,
-    quantity: 1,
-    unitPrice: 300000,
-    image: "/rice-company.jpg",
-  },
-];
+const product = {
+  id: "2-pack",
+  name: "二入組合禮盒",
+  description: "白米＋紅糙米（600g／包），抽屜式包裝",
+  unitPrice: 500,
+  image: "/rice-2pack.jpg",
+};
+
+type DeliveryOption = "mid-autumn" | "spring" | "both";
+
+interface DeliverySelection {
+  midAutumn: number;
+  spring: number;
+}
 
 /**
  * 生態米禮盒預購頁面
  */
 export default function Home() {
-  const [selectedProduct, setSelectedProduct] = useState(products[0]);
-  const [deliveryTime, setDeliveryTime] = useState<"中秋節前" | "春節前">(
-    "中秋節前"
-  );
+  const [deliveryOption, setDeliveryOption] =
+    useState<DeliveryOption>("mid-autumn");
+  const [quantities, setQuantities] = useState<DeliverySelection>({
+    midAutumn: 1,
+    spring: 0,
+  });
+
+  // 計算總金額
+  const getTotalAmount = () => {
+    let total = 0;
+    if (deliveryOption === "mid-autumn") {
+      total = quantities.midAutumn * product.unitPrice;
+    } else if (deliveryOption === "spring") {
+      total = quantities.spring * product.unitPrice;
+    } else if (deliveryOption === "both") {
+      total = (quantities.midAutumn + quantities.spring) * product.unitPrice;
+    }
+    return total;
+  };
+
+  // 獲取商品描述
+  const getProductDescription = () => {
+    const descriptions = [];
+    if (deliveryOption === "mid-autumn" || deliveryOption === "both") {
+      if (quantities.midAutumn > 0) {
+        descriptions.push(`中秋節前配送 ${quantities.midAutumn} 盒`);
+      }
+    }
+    if (deliveryOption === "spring" || deliveryOption === "both") {
+      if (quantities.spring > 0) {
+        descriptions.push(`春節前配送 ${quantities.spring} 盒`);
+      }
+    }
+    return `${product.name} - ${descriptions.join("、")}`;
+  };
+
+  // 處理配送選項變更
+  const handleDeliveryOptionChange = (option: DeliveryOption) => {
+    setDeliveryOption(option);
+    // 重置數量
+    if (option === "mid-autumn") {
+      setQuantities({ midAutumn: 1, spring: 0 });
+    } else if (option === "spring") {
+      setQuantities({ midAutumn: 0, spring: 1 });
+    } else {
+      setQuantities({ midAutumn: 1, spring: 1 });
+    }
+  };
+
+  // 處理數量變更
+  const handleQuantityChange = (
+    type: "midAutumn" | "spring",
+    value: number
+  ) => {
+    const newValue = Math.max(0, value);
+    setQuantities((prev) => ({
+      ...prev,
+      [type]: newValue,
+    }));
+  };
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -75,7 +119,7 @@ export default function Home() {
 
         <div className="grid lg:grid-cols-3 gap-8 mb-12">
           <div className="lg:col-span-2 space-y-8">
-            {/* 故事說明區塊 - 簡化版本 */}
+            {/* 故事說明區塊 */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               {/* 標題區塊 */}
               <div className="bg-slate-700 py-6 px-8 text-white">
@@ -147,85 +191,285 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 商品選擇區塊 */}
+            {/* 商品展示區塊 */}
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-slate-800">
-                選擇您的支持方案
+                生態米禮盒預購
               </h2>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {products.map((product) => (
-                  <Card
-                    key={product.id}
-                    className={`cursor-pointer transition-all hover:shadow-md ${
-                      selectedProduct.id === product.id
-                        ? "ring-2 ring-slate-500 bg-slate-50"
-                        : "bg-white"
-                    }`}
-                    onClick={() => setSelectedProduct(product)}
-                  >
-                    <div className="aspect-[4/3] relative bg-slate-100">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://placehold.co/400x300/f5f5f4/78716c?text=生態米禮盒";
-                        }}
-                      />
-                    </div>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-base">
+              {/* 商品卡片 */}
+              <Card className="bg-white border-slate-200">
+                <div className="grid md:grid-cols-2 gap-6 p-6">
+                  <div className="aspect-[4/3] relative bg-slate-100 rounded-lg overflow-hidden">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "https://placehold.co/400x300/f5f5f4/78716c?text=生態米禮盒";
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800">
                         {product.name}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="py-2 text-sm">
-                      <p>{product.description}</p>
-                      <p className="mt-2 font-medium text-slate-700">
-                        NT$ {product.price.toLocaleString()}
+                      </h3>
+                      <p className="text-slate-600 mt-2">
+                        {product.description}
                       </p>
-                      {product.quantity > 1 && (
-                        <p className="text-xs text-slate-500">
-                          {product.quantity} 組 | 平均每盒 NT${" "}
-                          {product.unitPrice}
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      <p className="text-lg font-semibold text-slate-700 mt-3">
+                        NT$ {product.unitPrice.toLocaleString()} / 盒
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-slate-800">
+                        您的支持將會：
+                      </h4>
+                      <ul className="space-y-2">
+                        <li className="flex items-start">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-slate-600 mr-2 mt-0.5 flex-shrink-0"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          <span className="text-slate-700">
+                            支持友善耕作的農夫減少農藥使用
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-slate-600 mr-2 mt-0.5 flex-shrink-0"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          <span className="text-slate-700">
+                            協助立起猛禽棲架，取代老鼠藥
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-slate-600 mr-2 mt-0.5 flex-shrink-0"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          <span className="text-slate-700">
+                            獲得印有珍貴生態紀錄的米禮盒
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
               {/* 配送時間選擇 */}
               <Card className="bg-white border-slate-200">
                 <CardHeader>
                   <CardTitle className="text-lg text-slate-800">
-                    配送時間
+                    選擇配送時間
                   </CardTitle>
+                  <CardDescription>
+                    請選擇您希望的配送時間，可以選擇單一時間或兩個時間都要
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-4">
-                    <button
-                      className={`px-4 py-2 rounded-md border transition-colors ${
-                        deliveryTime === "中秋節前"
-                          ? "bg-slate-100 border-slate-500 text-slate-700"
-                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <Button
+                      variant={
+                        deliveryOption === "mid-autumn" ? "default" : "outline"
+                      }
+                      className={`h-auto p-4 ${
+                        deliveryOption === "mid-autumn"
+                          ? "bg-slate-700 hover:bg-slate-800"
+                          : "border-slate-200 hover:bg-slate-50"
                       }`}
-                      onClick={() => setDeliveryTime("中秋節前")}
+                      onClick={() => handleDeliveryOptionChange("mid-autumn")}
                     >
-                      中秋節前配送
-                    </button>
-                    <button
-                      className={`px-4 py-2 rounded-md border transition-colors ${
-                        deliveryTime === "春節前"
-                          ? "bg-slate-100 border-slate-500 text-slate-700"
-                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      <div className="text-center">
+                        <div className="font-semibold">中秋節前</div>
+                        <div className="text-sm opacity-80">單一配送</div>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant={
+                        deliveryOption === "spring" ? "default" : "outline"
+                      }
+                      className={`h-auto p-4 ${
+                        deliveryOption === "spring"
+                          ? "bg-slate-700 hover:bg-slate-800"
+                          : "border-slate-200 hover:bg-slate-50"
                       }`}
-                      onClick={() => setDeliveryTime("春節前")}
+                      onClick={() => handleDeliveryOptionChange("spring")}
                     >
-                      春節前配送
-                    </button>
+                      <div className="text-center">
+                        <div className="font-semibold">春節前</div>
+                        <div className="text-sm opacity-80">單一配送</div>
+                      </div>
+                    </Button>
+
+                    <Button
+                      variant={
+                        deliveryOption === "both" ? "default" : "outline"
+                      }
+                      className={`h-auto p-4 ${
+                        deliveryOption === "both"
+                          ? "bg-slate-700 hover:bg-slate-800"
+                          : "border-slate-200 hover:bg-slate-50"
+                      }`}
+                      onClick={() => handleDeliveryOptionChange("both")}
+                    >
+                      <div className="text-center">
+                        <div className="font-semibold">兩者都要</div>
+                        <div className="text-sm opacity-80">分批配送</div>
+                      </div>
+                    </Button>
+                  </div>
+
+                  {/* 數量選擇 */}
+                  <div className="space-y-4 pt-4 border-t border-slate-200">
+                    <h4 className="font-semibold text-slate-800">選擇數量</h4>
+
+                    {(deliveryOption === "mid-autumn" ||
+                      deliveryOption === "both") && (
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="midAutumn" className="text-slate-700">
+                          中秋節前配送
+                        </Label>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleQuantityChange(
+                                "midAutumn",
+                                quantities.midAutumn - 1
+                              )
+                            }
+                            disabled={
+                              quantities.midAutumn <=
+                              (deliveryOption === "mid-autumn" ? 1 : 0)
+                            }
+                          >
+                            -
+                          </Button>
+                          <Input
+                            id="midAutumn"
+                            type="number"
+                            min={deliveryOption === "mid-autumn" ? 1 : 0}
+                            value={quantities.midAutumn}
+                            onChange={(e) =>
+                              handleQuantityChange(
+                                "midAutumn",
+                                parseInt(e.target.value) || 0
+                              )
+                            }
+                            className="w-20 text-center"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleQuantityChange(
+                                "midAutumn",
+                                quantities.midAutumn + 1
+                              )
+                            }
+                          >
+                            +
+                          </Button>
+                          <span className="text-slate-600 ml-2">盒</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {(deliveryOption === "spring" ||
+                      deliveryOption === "both") && (
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="spring" className="text-slate-700">
+                          春節前配送
+                        </Label>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleQuantityChange(
+                                "spring",
+                                quantities.spring - 1
+                              )
+                            }
+                            disabled={
+                              quantities.spring <=
+                              (deliveryOption === "spring" ? 1 : 0)
+                            }
+                          >
+                            -
+                          </Button>
+                          <Input
+                            id="spring"
+                            type="number"
+                            min={deliveryOption === "spring" ? 1 : 0}
+                            value={quantities.spring}
+                            onChange={(e) =>
+                              handleQuantityChange(
+                                "spring",
+                                parseInt(e.target.value) || 0
+                              )
+                            }
+                            className="w-20 text-center"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleQuantityChange(
+                                "spring",
+                                quantities.spring + 1
+                              )
+                            }
+                          >
+                            +
+                          </Button>
+                          <span className="text-slate-600 ml-2">盒</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -241,149 +485,43 @@ export default function Home() {
                   <CardDescription>您的預購詳情</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="font-medium text-lg text-slate-800">
-                      {selectedProduct.name}
-                    </span>
-                    <span className="font-bold text-lg text-slate-700">
-                      NT$ {selectedProduct.price.toLocaleString()}
-                    </span>
-                  </div>
-                  <p className="text-slate-700">
-                    {selectedProduct.description}
-                  </p>
-
-                  <div className="pt-2">
-                    <h4 className="font-semibold mb-2 text-slate-800">
-                      您的支持將會：
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-slate-800">
+                      {product.name}
                     </h4>
-                    <ul className="space-y-2">
-                      {selectedProduct.id !== "company" ? (
-                        <>
-                          <li className="flex items-start">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-slate-600 mr-2 mt-0.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-slate-700">
-                              支持友善耕作的農夫減少農藥使用
-                            </span>
-                          </li>
-                          <li className="flex items-start">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-slate-600 mr-2 mt-0.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-slate-700">
-                              協助立起猛禽棲架，取代老鼠藥
-                            </span>
-                          </li>
-                          <li className="flex items-start">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-slate-600 mr-2 mt-0.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-slate-700">
-                              獲得印有珍貴生態紀錄的米禮盒
-                            </span>
-                          </li>
-                        </>
-                      ) : (
-                        <>
-                          <li className="flex items-start">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-slate-600 mr-2 mt-0.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-slate-700">
-                              冠名猛禽棲架或生態觀測盆
-                            </span>
-                          </li>
-                          <li className="flex items-start">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-slate-600 mr-2 mt-0.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-slate-700">
-                              客製企業 LOGO 禮盒包裝與故事頁面
-                            </span>
-                          </li>
-                          <li className="flex items-start">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-slate-600 mr-2 mt-0.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-slate-700">
-                              取得生態影像與數據用於永續報告書
-                            </span>
-                          </li>
-                        </>
-                      )}
-                    </ul>
-                  </div>
 
-                  <div className="pt-2">
-                    <p className="text-sm text-slate-600">{deliveryTime}配送</p>
+                    {/* 顯示配送詳情 */}
+                    {(deliveryOption === "mid-autumn" ||
+                      deliveryOption === "both") &&
+                      quantities.midAutumn > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600">
+                            中秋節前配送 × {quantities.midAutumn}
+                          </span>
+                          <span className="text-slate-700">
+                            NT${" "}
+                            {(
+                              quantities.midAutumn * product.unitPrice
+                            ).toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+
+                    {(deliveryOption === "spring" ||
+                      deliveryOption === "both") &&
+                      quantities.spring > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600">
+                            春節前配送 × {quantities.spring}
+                          </span>
+                          <span className="text-slate-700">
+                            NT${" "}
+                            {(
+                              quantities.spring * product.unitPrice
+                            ).toLocaleString()}
+                          </span>
+                        </div>
+                      )}
                   </div>
 
                   <Separator className="bg-slate-200" />
@@ -391,15 +529,21 @@ export default function Home() {
                   <div className="flex justify-between text-lg font-bold">
                     <span className="text-slate-800">總計</span>
                     <span className="text-slate-700">
-                      NT$ {selectedProduct.price.toLocaleString()}
+                      NT$ {getTotalAmount().toLocaleString()}
                     </span>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                  <PaymentForm
-                    productName={`生態米禮盒 - ${selectedProduct.name} (${deliveryTime}配送)`}
-                    productPrice={selectedProduct.price}
-                  />
+                  {getTotalAmount() > 0 ? (
+                    <PaymentForm
+                      productName={getProductDescription()}
+                      productPrice={getTotalAmount()}
+                    />
+                  ) : (
+                    <div className="w-full p-4 text-center text-slate-500 bg-slate-50 rounded-md">
+                      請選擇數量
+                    </div>
+                  )}
                   <p className="text-xs text-slate-600 text-center">
                     你送出的，不只是米，更是一塊恢復生命力的台灣田地。
                   </p>
