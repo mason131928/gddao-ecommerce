@@ -1,0 +1,90 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 開發最佳實踐指南
+
+## 1. 資訊獲取與決策流程
+
+### 專業資訊獲取
+* **優先使用官方文檔**：任何開發決策必須首先參考相關技術的官方文檔
+  - Next.js: https://nextjs.org/docs
+  - React: https://react.dev/
+  - Tailwind CSS: https://tailwindcss.com/docs
+  - Shadcn/UI: https://ui.shadcn.com/
+  - TypeScript: https://www.typescriptlang.org/docs/
+* **使用 MCP Content7 工具**：在做技術決策前使用 Content7 工具查詢最新的庫文檔和最佳實踐
+  - 語法：`mcp_context7_resolve-library-id` + `mcp_context7_get-library-docs`
+
+* **使用網絡搜索**：對於缺乏官方文檔的問題，使用 `web_search` 或 `mcp_mcp-local-rag_rag_search` 獲取社群最新解決方案
+
+* **版本特定文檔**：確保所查閱的文檔與專案使用的版本匹配
+  - 每次引用文檔時確認當前使用的依賴版本
+  - 注意查看版本更新日誌和遷移指南
+
+### 依賴版本管理
+* **嚴格遵循語義化版本**：了解主版本、次版本和修補版本的差異
+* **定期檢查依賴更新**：使用 `pnpm outdated` 檢查有更新的依賴
+* **測試相容性**：任何依賴更新前必須充分測試
+
+## 2. 框架特定最佳實踐
+
+### Next.js 15 (App Router)
+* **最大化使用 Server Components**：默認使用 Server Components，僅在必要時使用 Client Components
+* **路由與佈局**：充分利用嵌套佈局和路由分組
+* **資料獲取**：優先使用 Server Components 中的 async/await 模式
+* **Metadata API**：使用內置的 Metadata API 增強 SEO
+* **避免不必要的客戶端渲染**：避免過度使用 `"use client"` 指令
+
+### React 19
+* **使用 React Server Components**：理解並正確使用服務端和客戶端元件的分離
+* **Hooks 最佳實踐**：
+  - 遵循 Hook 規則
+  - 使用 dependency 陣列避免不必要的重渲染
+  - 優先使用函數式更新 state
+
+### Tailwind CSS 4
+* **使用現代語法**：採用 Tailwind CSS 4 的最新語法和特性
+* **使用主題系統**：通過 `tailwind.config.ts` 定義和使用主題變數
+* **元件抽象**：使用 Tailwind 的 `@apply` 指令創建可復用的樣式
+
+### TypeScript
+* **嚴格模式**：啟用並維護嚴格的 TypeScript 設置
+* **明確類型定義**：避免使用 `any` 類型，總是定義明確的介面和類型
+* **利用類型推導**：合理利用 TypeScript 的類型推導能力
+
+## 3. 代碼質量標準
+
+### 代碼風格
+* **一致性**：遵循專案的 ESLint 和 Prettier 配置
+* **可讀性**：使用有意義的命名和清晰的函數結構
+* **模組化**：建立小型、可組合的元件和函數
+
+### 性能優化
+* **避免不必要的渲染**：正確使用 memo、useMemo 和 useCallback
+* **代碼分割**：使用動態導入分割大型應用
+* **資源優化**：使用 Next.js 的 Image 和 Font 元件自動優化資源
+
+### 安全性
+* **防止 XSS**：避免使用 dangerouslySetInnerHTML
+* **安全處理用戶輸入**：驗證所有用戶輸入
+* **正確處理 API 密鑰**：使用環境變數並確保敏感信息不被暴露
+
+## 4. 開發流程
+
+### 代碼審查與測試
+* **寫測試**：為關鍵功能編寫單元測試和整合測試
+* **代碼審查**：遵循結構化的代碼審查流程
+* **自動化測試**：設置 CI/CD 流程運行自動化測試
+
+### 文檔與知識共享
+* **代碼註釋**：為複雜邏輯添加清晰的註釋
+* **技術決策記錄**：記錄重要技術決策及其理由
+* **共享知識**：定期分享學習成果和解決方案
+
+## 5. 持續優化
+
+* **性能監控**：監控應用性能並識別優化機會
+* **用戶反饋**：收集並分析用戶反饋以指導優化
+* **技術債務管理**：定期識別並解決技術債務
