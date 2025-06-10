@@ -66,7 +66,7 @@ export default function RootLayout({
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <h1 className="text-xl font-bold text-gray-900">好事道電商</h1>
+                <h1 className="text-xl font-bold text-gray-900">好事道</h1>
               </div>
 
               {/* 管理後台登入按鈕 */}

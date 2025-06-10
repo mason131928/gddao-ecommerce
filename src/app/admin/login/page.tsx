@@ -50,75 +50,80 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <div className="min-h-screen bg-slate-50">
       {/* 頂部橫幅 */}
-      <div className="fixed top-0 w-full bg-slate-700 text-white py-3 text-center shadow-sm z-10">
+      <div className="w-full bg-slate-700 text-white py-3 text-center shadow-sm">
         <p className="text-sm font-medium">
           生物多樣性契作 2.0 — 電商後台管理系統
         </p>
       </div>
 
-      <div className="w-full max-w-md px-4 mt-16">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-slate-800">
-              管理後台登入
-            </CardTitle>
-            <CardDescription>請輸入您的帳號密碼以存取管理系統</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">帳號</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="請輸入帳號"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">密碼</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="請輸入密碼"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              {error && (
-                <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">
-                  {error}
+      {/* 登入表單區域 */}
+      <div className="flex items-center justify-center min-h-[calc(100vh-60px)] px-4 py-8">
+        <div className="w-full max-w-md">
+          <Card>
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold text-slate-800">
+                管理後台登入
+              </CardTitle>
+              <CardDescription>
+                請輸入您的帳號密碼以存取管理系統
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">帳號</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="請輸入帳號"
+                    required
+                    disabled={loading}
+                  />
                 </div>
-              )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    登入中...
+                <div className="space-y-2">
+                  <Label htmlFor="password">密碼</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="請輸入密碼"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+
+                {error && (
+                  <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">
+                    {error}
                   </div>
-                ) : (
-                  "登入"
                 )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
 
-        <div className="mt-8 text-center text-slate-600 text-sm">
-          <p>
-            © {new Date().getFullYear()} 孔雀魚數位科技股份有限公司.
-            保留所有權利.
-          </p>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      登入中...
+                    </div>
+                  ) : (
+                    "登入"
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <div className="mt-8 text-center text-slate-600 text-sm">
+            <p>
+              © {new Date().getFullYear()} 孔雀魚數位科技股份有限公司.
+              保留所有權利.
+            </p>
+          </div>
         </div>
       </div>
     </div>

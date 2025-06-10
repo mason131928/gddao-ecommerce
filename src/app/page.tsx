@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 const product = {
   id: "2-pack",
   name: "二入組合禮盒",
-  description: "白米＋紅糙米（600g／包），抽屜式包裝",
+  description: "白米＋紅糙米（600g／盒），抽屜式包裝，(一箱10盒)",
   unitPrice: 5000,
   image: "/rice-2pack.jpg",
 };
