@@ -64,23 +64,9 @@ export function PaymentForm({ productPrice, productName }: PaymentFormProps) {
 
       const data = await response.json();
 
-      if (data.success) {
-        // 提交表單到藍新金流
-        const form = document.createElement("form");
-        form.method = "post";
-        form.action = process.env.NEXT_PUBLIC_NEWEBPAY_URL!;
-        form.style.display = "none";
-
-        Object.entries(data.paymentData).forEach(([key, value]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = value as string;
-          form.appendChild(input);
-        });
-
-        document.body.appendChild(form);
-        form.submit();
+      if (data.code === 200 && data.data?.payment_url) {
+        // 直接跳轉到後端產生的付款連結
+        window.location.href = data.data.payment_url;
       } else {
         throw new Error(data.message || "建立訂單失敗");
       }

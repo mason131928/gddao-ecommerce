@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 const product = {
   id: "2-pack",
   name: "生態禮盒",
-  description: "白米＋紅糙米（600g／盒），抽屜式包裝，(一箱10盒)",
+  description: "白米＋阿美族紅糯米（600g/包），一箱10盒",
   unitPrice: 5000,
   image: "/rice-2pack.jpg",
 };

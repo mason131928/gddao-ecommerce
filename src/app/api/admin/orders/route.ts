@@ -10,7 +10,7 @@ export async function GET() {
 
   try {
     // 使用正確的後端API地址
-    const backendUrl = "http://0.0.0.0:8000";
+    const backendUrl = "https://api.gddao.com";
     const apiUrl = `${backendUrl}/api/ecommerce/orders`;
 
     console.log("🌐 請求後端URL:", apiUrl);
