@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 
 const product = {
   id: "2-pack",
-  name: "二入組合禮盒",
+  name: "生態禮盒",
   description: "白米＋紅糙米（600g／盒），抽屜式包裝，(一箱10盒)",
   unitPrice: 5000,
   image: "/rice-2pack.jpg",
@@ -33,7 +33,7 @@ interface DeliverySelection {
 }
 
 /**
- * 生態米禮盒預購頁面
+ * 生態米禮盒訂購頁面
  */
 export default function Home() {
   const [deliveryOption, setDeliveryOption] =
@@ -194,7 +194,7 @@ export default function Home() {
             {/* 商品展示區塊 */}
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-slate-800">
-                生態米禮盒預購
+                生態米禮盒訂購
               </h2>
 
               {/* 商品卡片 */}
@@ -482,7 +482,7 @@ export default function Home() {
               <Card className="bg-white border-slate-200 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-slate-800">訂單摘要</CardTitle>
-                  <CardDescription>您的預購詳情</CardDescription>
+                  <CardDescription>您的訂購詳情</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
@@ -545,7 +545,7 @@ export default function Home() {
                     </div>
                   )}
                   <p className="text-xs text-slate-600 text-center">
-                    你送出的，不只是米，更是一塊恢復生命力的台灣田地。
+                    你送出的不只是米，更是一塊恢復生命力的台灣田地。
                   </p>
                 </CardFooter>
               </Card>

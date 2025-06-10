@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     console.log("📊 請求數據:", body);
 
     // 轉發請求到後端API
-    const backendUrl = "https://api.gddao.com";
+    const backendUrl = "http://0.0.0.0:8000";
     const apiUrl = `${backendUrl}/api/ecommerce/create-order`;
     console.log("🌐 轉發到後端URL:", apiUrl);
 

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     console.log("📋 藍新金流回調資料：", callbackData);
 
     // 使用正確的後端API地址
-    const backendUrl = "https://api.gddao.com";
+    const backendUrl = "http://0.0.0.0:8000";
     const notifyUrl = `${backendUrl}/web/pay/notify_ecommerce`;
 
     console.log("🌐 轉發到後端URL:", notifyUrl);

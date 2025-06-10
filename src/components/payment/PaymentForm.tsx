@@ -22,6 +22,7 @@ const formSchema = z.object({
   name: z.string().min(2, "請輸入完整姓名"),
   email: z.string().email("請輸入有效的電子郵件"),
   phone: z.string().regex(/^09\d{8}$/, "請輸入有效的手機號碼"),
+  address: z.string().min(5, "請輸入完整的配送地址"),
   amount: z.number().min(1, "金額必須大於 0"),
   note: z.string().optional(),
 });
@@ -42,6 +43,7 @@ export function PaymentForm({ productPrice, productName }: PaymentFormProps) {
       name: "",
       email: "",
       phone: "",
+      address: "",
       amount: productPrice,
       note: "",
     },
@@ -56,7 +58,7 @@ export function PaymentForm({ productPrice, productName }: PaymentFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...values,
-          itemDesc: productName,
+          product_name: productName,
         }),
       });
 
@@ -151,13 +153,32 @@ export function PaymentForm({ productPrice, productName }: PaymentFormProps) {
 
         <FormField
           control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-slate-700">配送地址</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="請填寫完整的配送地址"
+                  className="resize-none border-slate-200 focus-visible:ring-slate-300 focus-visible:border-slate-400"
+                  rows={3}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="note"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-slate-700">備註（選填）</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="請填寫配送地址或其他備註事項"
+                  placeholder="其他備註事項"
                   className="resize-none border-slate-200 focus-visible:ring-slate-300 focus-visible:border-slate-400"
                   rows={3}
                   {...field}

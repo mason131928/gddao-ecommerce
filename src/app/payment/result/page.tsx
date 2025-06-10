@@ -161,7 +161,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
             {isSuccess && (
               <p className="text-sm text-center text-slate-600">
-                你送出的，不只是米，更是一塊恢復生命力的台灣田地。
+                你送出的不只是米，更是一塊恢復生命力的台灣田地。
               </p>
             )}
           </CardFooter>
