@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -51,6 +52,9 @@ const orderStatusMap = {
 export default function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
   const [stats, setStats] = useState({
     total: 0,
     paid: 0,
@@ -58,9 +62,33 @@ export default function AdminPage() {
     failed: 0,
   });
 
+  // 檢查管理員權限
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    checkAuth();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const checkAuth = async () => {
+    try {
+      const response = await fetch("/api/admin/check-auth");
+      if (response.ok) {
+        setIsAuthenticated(true);
+        fetchOrders();
+      } else {
+        router.push("/admin/login");
+      }
+    } catch (error) {
+      console.error("權限檢查失敗:", error);
+      router.push("/admin/login");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchOrders();
+    }
+  }, [isAuthenticated]);
 
   const fetchOrders = async () => {
     try {
@@ -86,6 +114,46 @@ export default function AdminPage() {
     return `NT$ ${amount.toLocaleString()}`;
   };
 
+  // 登出功能
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/admin/logout", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        router.push("/admin/login");
+      } else {
+        console.error("登出失敗");
+      }
+    } catch (error) {
+      console.error("登出錯誤:", error);
+    }
+  };
+
+  // 權限檢查載入中
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-700 mx-auto mb-4"></div>
+          <p className="text-slate-600">驗證權限中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 未通過權限檢查
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-600">重導向到登入頁面...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -100,16 +168,28 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* 頂部橫幅 */}
-      <div className="w-full bg-slate-700 text-white py-3 text-center shadow-sm">
-        <p className="text-sm font-medium">
-          生物多樣性契作 2.0 — 電商後台管理系統
-        </p>
+      <div className="w-full bg-slate-700 text-white py-3 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <p className="text-sm font-medium">
+            生物多樣性契作 2.0 — 電商後台管理系統
+          </p>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            size="sm"
+            className="text-white border-white hover:bg-white hover:text-slate-700"
+          >
+            登出
+          </Button>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">訂單管理</h1>
-          <p className="text-slate-600">管理生態米禮盒的訂單和付款狀態</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">訂單管理</h1>
+            <p className="text-slate-600">管理生態米禮盒的訂單和付款狀態</p>
+          </div>
         </div>
 
         {/* 統計卡片 */}
