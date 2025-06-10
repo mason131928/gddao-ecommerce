@@ -21,7 +21,7 @@ const product = {
   id: "2-pack",
   name: "二入組合禮盒",
   description: "白米＋紅糙米（600g／包），抽屜式包裝",
-  unitPrice: 500,
+  unitPrice: 5000,
   image: "/rice-2pack.jpg",
 };
 
@@ -61,12 +61,12 @@ export default function Home() {
     const descriptions = [];
     if (deliveryOption === "mid-autumn" || deliveryOption === "both") {
       if (quantities.midAutumn > 0) {
-        descriptions.push(`中秋節前配送 ${quantities.midAutumn} 盒`);
+        descriptions.push(`中秋節前配送 ${quantities.midAutumn} 箱`);
       }
     }
     if (deliveryOption === "spring" || deliveryOption === "both") {
       if (quantities.spring > 0) {
-        descriptions.push(`春節前配送 ${quantities.spring} 盒`);
+        descriptions.push(`春節前配送 ${quantities.spring} 箱`);
       }
     }
     return `${product.name} - ${descriptions.join("、")}`;
@@ -221,7 +221,7 @@ export default function Home() {
                         {product.description}
                       </p>
                       <p className="text-lg font-semibold text-slate-700 mt-3">
-                        NT$ {product.unitPrice.toLocaleString()} / 盒
+                        NT$ {product.unitPrice.toLocaleString()} / 箱
                       </p>
                     </div>
 
@@ -411,7 +411,7 @@ export default function Home() {
                           >
                             +
                           </Button>
-                          <span className="text-slate-600 ml-2">盒</span>
+                          <span className="text-slate-600 ml-2">箱</span>
                         </div>
                       </div>
                     )}
@@ -466,7 +466,7 @@ export default function Home() {
                           >
                             +
                           </Button>
-                          <span className="text-slate-600 ml-2">盒</span>
+                          <span className="text-slate-600 ml-2">箱</span>
                         </div>
                       </div>
                     )}
