@@ -16,7 +16,7 @@ export async function checkAdminAuth(): Promise<boolean> {
 
       // 檢查是否為管理員且 session 未過期（24小時）
       const isValid =
-        username === "Guppy" &&
+        username === "guppy" &&
         role === "admin" &&
         Date.now() - parseInt(timestamp) < 24 * 60 * 60 * 1000;
 

@@ -59,21 +59,23 @@ export default function AdminLoginPage() {
       </div>
 
       {/* 登入表單區域 */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-60px)] px-4 py-8">
+      <div className="flex items-center justify-center min-h-[calc(100vh-60px)] px-4 py-4">
         <div className="w-full max-w-md">
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-slate-800">
+          <Card className="mx-auto">
+            <CardHeader className="text-center space-y-2">
+              <CardTitle className="text-xl md:text-2xl font-bold text-slate-800">
                 管理後台登入
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm md:text-base">
                 請輸入您的帳號密碼以存取管理系統
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 md:px-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="username">帳號</Label>
+                  <Label htmlFor="username" className="text-sm font-medium">
+                    帳號
+                  </Label>
                   <Input
                     id="username"
                     type="text"
@@ -82,11 +84,14 @@ export default function AdminLoginPage() {
                     placeholder="請輸入帳號"
                     required
                     disabled={loading}
+                    className="h-10"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">密碼</Label>
+                  <Label htmlFor="password" className="text-sm font-medium">
+                    密碼
+                  </Label>
                   <Input
                     id="password"
                     type="password"
@@ -95,16 +100,21 @@ export default function AdminLoginPage() {
                     placeholder="請輸入密碼"
                     required
                     disabled={loading}
+                    className="h-10"
                   />
                 </div>
 
                 {error && (
-                  <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">
+                  <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md border border-red-200">
                     {error}
                   </div>
                 )}
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full h-10 bg-slate-700 hover:bg-slate-800"
+                  disabled={loading}
+                >
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -118,7 +128,7 @@ export default function AdminLoginPage() {
             </CardContent>
           </Card>
 
-          <div className="mt-8 text-center text-slate-600 text-sm">
+          <div className="mt-6 text-center text-slate-600 text-xs md:text-sm px-4">
             <p>
               © {new Date().getFullYear()} 孔雀魚數位科技股份有限公司.
               保留所有權利.
